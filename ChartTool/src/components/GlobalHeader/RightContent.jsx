@@ -7,7 +7,6 @@ import HeaderSearch from '../HeaderSearch';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
 import NoticeIconView from './NoticeIconView';
-import NoticeIconView from './NoticeIconView';
 const ENVTagColor = {
   dev: 'orange',
   test: 'green',
