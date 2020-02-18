@@ -1,5 +1,5 @@
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { List } from 'antd';
 
 const passwordStrength = {
@@ -31,12 +31,12 @@ class SecurityView extends Component {
         {},
       ),
       description: (
-        <Fragment>
+        <>
           {formatMessage({
             id: 'accountandsettings.security.password-description',
           })}
           ：{passwordStrength.strong}
-        </Fragment>
+        </>
       ),
       actions: [
         <a key="Modify">
@@ -125,7 +125,7 @@ class SecurityView extends Component {
   render() {
     const data = this.getData();
     return (
-      <Fragment>
+      <>
         <List
           itemLayout="horizontal"
           dataSource={data}
@@ -135,7 +135,7 @@ class SecurityView extends Component {
             </List.Item>
           )}
         />
-      </Fragment>
+      </>
     );
   }
 }

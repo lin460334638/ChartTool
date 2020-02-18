@@ -6,17 +6,10 @@ import styles from './GeographicView.less';
 const { Option } = Select;
 const nullSelectItem = {
   label: '',
+  value: '',
   key: '',
 };
 
-@connect(({ accountAndsettings, loading }) => {
-  const { province, city } = accountAndsettings;
-  return {
-    province,
-    city,
-    loading: loading.models.accountAndsettings,
-  };
-})
 class GeographicView extends Component {
   componentDidMount = () => {
     const { dispatch } = this.props;
@@ -151,4 +144,11 @@ class GeographicView extends Component {
   }
 }
 
-export default GeographicView;
+export default connect(({ accountAndsettings, loading }) => {
+  const { province, city } = accountAndsettings;
+  return {
+    province,
+    city,
+    loading: loading.models.accountAndsettings,
+  };
+})(GeographicView);

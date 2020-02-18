@@ -83,17 +83,6 @@ const ExtraContent = () => (
   </div>
 );
 
-@connect(
-  ({ dashboardAndworkplace: { currentUser, projectNotice, activities, radarData }, loading }) => ({
-    currentUser,
-    projectNotice,
-    activities,
-    radarData,
-    currentUserLoading: loading.effects['dashboardAndworkplace/fetchUserCurrent'],
-    projectLoading: loading.effects['dashboardAndworkplace/fetchProjectNotice'],
-    activitiesLoading: loading.effects['dashboardAndworkplace/fetchActivitiesList'],
-  }),
-)
 class Workplace extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
@@ -151,6 +140,11 @@ class Workplace extends Component {
       activitiesLoading,
       radarData,
     } = this.props;
+
+    if (!currentUser || !currentUser.userid) {
+      return null;
+    }
+
     return (
       <PageHeaderWrapper
         content={<PageHeaderContent currentUser={currentUser} />}
@@ -272,4 +266,14 @@ class Workplace extends Component {
   }
 }
 
-export default Workplace;
+export default connect(
+  ({ dashboardAndworkplace: { currentUser, projectNotice, activities, radarData }, loading }) => ({
+    currentUser,
+    projectNotice,
+    activities,
+    radarData,
+    currentUserLoading: loading.effects['dashboardAndworkplace/fetchUserCurrent'],
+    projectLoading: loading.effects['dashboardAndworkplace/fetchProjectNotice'],
+    activitiesLoading: loading.effects['dashboardAndworkplace/fetchActivitiesList'],
+  }),
+)(Workplace);

@@ -1,4 +1,5 @@
-import { Button, Card, Icon, List, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card, List, Typography } from 'antd';
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
@@ -6,10 +7,6 @@ import styles from './style.less';
 
 const { Paragraph } = Typography;
 
-@connect(({ listAndcardList, loading }) => ({
-  listAndcardList,
-  loading: loading.models.listAndcardList,
-}))
 class CardList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
@@ -102,7 +99,7 @@ class CardList extends Component {
               return (
                 <List.Item>
                   <Button type="dashed" className={styles.newButton}>
-                    <Icon type="plus" /> 新增产品
+                    <PlusOutlined /> 新增产品
                   </Button>
                 </List.Item>
               );
@@ -114,4 +111,7 @@ class CardList extends Component {
   }
 }
 
-export default CardList;
+export default connect(({ listAndcardList, loading }) => ({
+  listAndcardList,
+  loading: loading.models.listAndcardList,
+}))(CardList);

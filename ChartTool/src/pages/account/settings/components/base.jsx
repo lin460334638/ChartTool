@@ -1,25 +1,26 @@
-import { Button, Form, Input, Select, Upload, message } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, Input, Select, Upload, Form, message } from 'antd';
 import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'dva';
 import GeographicView from './GeographicView';
 import PhoneView from './PhoneView';
 import styles from './BaseView.less';
 
-const FormItem = Form.Item;
 const { Option } = Select; // 头像组件 方便以后独立，增加裁剪之类的功能
 
 const AvatarView = ({ avatar }) => (
-  <Fragment>
+  <>
     <div className={styles.avatar_title}>
       <FormattedMessage id="accountandsettings.basic.avatar" defaultMessage="Avatar" />
     </div>
     <div className={styles.avatar}>
       <img src={avatar} alt="avatar" />
     </div>
-    <Upload fileList={[]}>
+    <Upload showUploadList={false}>
       <div className={styles.button_view}>
-        <Button icon="upload">
+        <Button>
+          <UploadOutlined />
           <FormattedMessage
             id="accountandsettings.basic.change-avatar"
             defaultMessage="Change avatar"
@@ -27,7 +28,7 @@ const AvatarView = ({ avatar }) => (
         </Button>
       </div>
     </Upload>
-  </Fragment>
+  </>
 );
 
 const validatorGeographic = (_, value, callback) => {
@@ -58,27 +59,8 @@ const validatorPhone = (rule, value, callback) => {
   callback();
 };
 
-@connect(({ accountAndsettings }) => ({
-  currentUser: accountAndsettings.currentUser,
-}))
 class BaseView extends Component {
   view = undefined;
-
-  componentDidMount() {
-    this.setBaseInfo();
-  }
-
-  setBaseInfo = () => {
-    const { currentUser, form } = this.props;
-
-    if (currentUser) {
-      Object.keys(form.getFieldsValue()).forEach(key => {
-        const obj = {};
-        obj[key] = currentUser[key] || null;
-        form.setFieldsValue(obj);
-      });
-    }
-  };
 
   getAvatarURL() {
     const { currentUser } = this.props;
@@ -99,188 +81,183 @@ class BaseView extends Component {
     this.view = ref;
   };
 
-  handlerSubmit = event => {
-    event.preventDefault();
-    const { form } = this.props;
-    form.validateFields(err => {
-      if (!err) {
-        message.success(
-          formatMessage({
-            id: 'accountandsettings.basic.update.success',
-          }),
-        );
-      }
-    });
+  handleFinish = () => {
+    message.success(
+      formatMessage({
+        id: 'accountandsettings.basic.update.success',
+      }),
+    );
   };
 
   render() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
+    const { currentUser } = this.props;
     return (
       <div className={styles.baseView} ref={this.getViewDom}>
         <div className={styles.left}>
-          <Form layout="vertical" hideRequiredMark>
-            <FormItem
+          <Form
+            layout="vertical"
+            onFinish={this.handleFinish}
+            initialValues={currentUser}
+            hideRequiredMark
+          >
+            <Form.Item
+              name="email"
               label={formatMessage({
                 id: 'accountandsettings.basic.email',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.email-message',
+                    },
+                    {},
+                  ),
+                },
+              ]}
             >
-              {getFieldDecorator('email', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.email-message',
-                      },
-                      {},
-                    ),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            <FormItem
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="name"
               label={formatMessage({
                 id: 'accountandsettings.basic.nickname',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.nickname-message',
+                    },
+                    {},
+                  ),
+                },
+              ]}
             >
-              {getFieldDecorator('name', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.nickname-message',
-                      },
-                      {},
-                    ),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            <FormItem
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="profile"
               label={formatMessage({
                 id: 'accountandsettings.basic.profile',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.profile-message',
+                    },
+                    {},
+                  ),
+                },
+              ]}
             >
-              {getFieldDecorator('profile', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.profile-message',
-                      },
-                      {},
-                    ),
-                  },
-                ],
-              })(
-                <Input.TextArea
-                  placeholder={formatMessage({
-                    id: 'accountandsettings.basic.profile-placeholder',
-                  })}
-                  rows={4}
-                />,
-              )}
-            </FormItem>
-            <FormItem
+              <Input.TextArea
+                placeholder={formatMessage({
+                  id: 'accountandsettings.basic.profile-placeholder',
+                })}
+                rows={4}
+              />
+            </Form.Item>
+            <Form.Item
+              name="country"
               label={formatMessage({
                 id: 'accountandsettings.basic.country',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.country-message',
+                    },
+                    {},
+                  ),
+                },
+              ]}
             >
-              {getFieldDecorator('country', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.country-message',
-                      },
-                      {},
-                    ),
-                  },
-                ],
-              })(
-                <Select
-                  style={{
-                    maxWidth: 220,
-                  }}
-                >
-                  <Option value="China">中国</Option>
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem
+              <Select
+                style={{
+                  maxWidth: 220,
+                }}
+              >
+                <Option value="China">中国</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="geographic"
               label={formatMessage({
                 id: 'accountandsettings.basic.geographic',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.geographic-message',
+                    },
+                    {},
+                  ),
+                },
+                {
+                  validator: validatorGeographic,
+                },
+              ]}
             >
-              {getFieldDecorator('geographic', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.geographic-message',
-                      },
-                      {},
-                    ),
-                  },
-                  {
-                    validator: validatorGeographic,
-                  },
-                ],
-              })(<GeographicView />)}
-            </FormItem>
-            <FormItem
+              <GeographicView />
+            </Form.Item>
+            <Form.Item
+              name="address"
               label={formatMessage({
                 id: 'accountandsettings.basic.address',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.address-message',
+                    },
+                    {},
+                  ),
+                },
+              ]}
             >
-              {getFieldDecorator('address', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.address-message',
-                      },
-                      {},
-                    ),
-                  },
-                ],
-              })(<Input />)}
-            </FormItem>
-            <FormItem
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="phone"
               label={formatMessage({
                 id: 'accountandsettings.basic.phone',
               })}
+              rules={[
+                {
+                  required: true,
+                  message: formatMessage(
+                    {
+                      id: 'accountandsettings.basic.phone-message',
+                    },
+                    {},
+                  ),
+                },
+                {
+                  validator: validatorPhone,
+                },
+              ]}
             >
-              {getFieldDecorator('phone', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage(
-                      {
-                        id: 'accountandsettings.basic.phone-message',
-                      },
-                      {},
-                    ),
-                  },
-                  {
-                    validator: validatorPhone,
-                  },
-                ],
-              })(<PhoneView />)}
-            </FormItem>
-            <Button type="primary" onClick={this.handlerSubmit}>
-              <FormattedMessage
-                id="accountandsettings.basic.update"
-                defaultMessage="Update Information"
-              />
-            </Button>
+              <PhoneView />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit" type="primary">
+                <FormattedMessage
+                  id="accountandsettings.basic.update"
+                  defaultMessage="Update Information"
+                />
+              </Button>
+            </Form.Item>
           </Form>
         </div>
         <div className={styles.right}>
@@ -291,4 +268,6 @@ class BaseView extends Component {
   }
 }
 
-export default Form.create()(BaseView);
+export default connect(({ accountAndsettings }) => ({
+  currentUser: accountAndsettings.currentUser,
+}))(BaseView);

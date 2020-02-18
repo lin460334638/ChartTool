@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import { routerRedux } from 'dva/router';
 import { fakeAccountLogin, getFakeCaptcha } from './service';
 import { getPageQuery, setAuthority } from './utils/utils';
@@ -16,6 +17,7 @@ const Model = {
       }); // Login successfully
 
       if (response.status === 'ok') {
+        message.success('登录成功！');
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;

@@ -11,9 +11,6 @@ import styles from './style.less';
 
 const { Item } = Menu;
 
-@connect(({ accountAndsettings }) => ({
-  currentUser: accountAndsettings.currentUser,
-}))
 class Settings extends Component {
   main = undefined;
 
@@ -161,4 +158,6 @@ class Settings extends Component {
   }
 }
 
-export default Settings;
+export default connect(({ accountAndsettings }) => ({
+  currentUser: accountAndsettings.currentUser,
+}))(Settings);

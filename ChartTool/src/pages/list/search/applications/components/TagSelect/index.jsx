@@ -1,5 +1,6 @@
-import { Icon, Tag } from 'antd';
 import React, { Component } from 'react';
+import { Tag } from 'antd';
+import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import styles from './index.less';
 
@@ -138,7 +139,16 @@ class TagSelect extends Component {
           })}
         {expandable && (
           <a className={styles.trigger} onClick={this.handleExpand}>
-            {expand ? collapseText : expandText} <Icon type={expand ? 'up' : 'down'} />
+            {expand ? (
+              <>
+                {collapseText} <UpOutlined />
+              </>
+            ) : (
+              <>
+                {expandText}
+                <DownOutlined />
+              </>
+            )}
           </a>
         )}
       </div>

@@ -1,56 +1,84 @@
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Dropdown,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Menu,
-  Row,
-  Select,
-  message,
-} from 'antd';
-import React, { Component, Fragment } from 'react';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Divider, Dropdown, Menu, message } from 'antd';
+import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { connect } from 'dva';
-import moment from 'moment';
+import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import styles from './style.less';
+import { queryRule, updateRule, addRule, removeRule } from './service';
+/**
+ * 添加节点
+ * @param fields
+ */
 
-const FormItem = Form.Item;
-const { Option } = Select;
+const handleAdd = async fields => {
+  const hide = message.loading('正在添加');
 
-const getValue = obj =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+  try {
+    await addRule({
+      desc: fields.desc,
+    });
+    hide();
+    message.success('添加成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('添加失败请重试！');
+    return false;
+  }
+};
+/**
+ * 更新节点
+ * @param fields
+ */
 
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
+const handleUpdate = async fields => {
+  const hide = message.loading('正在配置');
 
-/* eslint react/no-multi-comp:0 */
-@connect(({ listAndtableList, loading }) => ({
-  listAndtableList,
-  loading: loading.models.listAndtableList,
-}))
-class TableList extends Component {
-  state = {
-    modalVisible: false,
-    updateModalVisible: false,
-    expandForm: false,
-    selectedRows: [],
-    formValues: {},
-    stepFormValues: {},
-  };
+  try {
+    await updateRule({
+      name: fields.name,
+      desc: fields.desc,
+      key: fields.key,
+    });
+    hide();
+    message.success('配置成功');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('配置失败请重试！');
+    return false;
+  }
+};
+/**
+ *  删除节点
+ * @param selectedRows
+ */
 
-  columns = [
+const handleRemove = async selectedRows => {
+  const hide = message.loading('正在删除');
+  if (!selectedRows) return true;
+
+  try {
+    await removeRule({
+      key: selectedRows.map(row => row.key),
+    });
+    hide();
+    message.success('删除成功，即将刷新');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('删除失败，请重试');
+    return false;
+  }
+};
+
+const TableList = () => {
+  const [createModalVisible, handleModalVisible] = useState(false);
+  const [updateModalVisible, handleUpdateModalVisible] = useState(false);
+  const [stepFormValues, setStepFormValues] = useState({});
+  const actionRef = useRef();
+  const columns = [
     {
       title: '规则名称',
       dataIndex: 'name',
@@ -63,452 +91,148 @@ class TableList extends Component {
       title: '服务调用次数',
       dataIndex: 'callNo',
       sorter: true,
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
+      renderText: val => `${val} 万`,
     },
     {
       title: '状态',
       dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
+      valueEnum: {
+        0: {
+          text: '关闭',
+          status: 'Default',
         },
-        {
-          text: status[1],
-          value: '1',
+        1: {
+          text: '运行中',
+          status: 'Processing',
         },
-        {
-          text: status[2],
-          value: '2',
+        2: {
+          text: '已上线',
+          status: 'Success',
         },
-        {
-          text: status[3],
-          value: '3',
+        3: {
+          text: '异常',
+          status: 'Error',
         },
-      ],
-
-      render(val) {
-        return <Badge status={statusMap[val]} text={status[val]} />;
       },
     },
     {
       title: '上次调度时间',
       dataIndex: 'updatedAt',
       sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      valueType: 'dateTime',
     },
     {
       title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+      dataIndex: 'option',
+      valueType: 'option',
+      render: (_, record) => (
+        <>
+          <a
+            onClick={() => {
+              handleUpdateModalVisible(true);
+              setStepFormValues(record);
+            }}
+          >
+            配置
+          </a>
           <Divider type="vertical" />
           <a href="">订阅警报</a>
-        </Fragment>
+        </>
       ),
     },
   ];
-
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listAndtableList/fetch',
-    });
-  }
-
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    dispatch({
-      type: 'listAndtableList/fetch',
-      payload: params,
-    });
-  };
-
-  handleFormReset = () => {
-    const { form, dispatch } = this.props;
-    form.resetFields();
-    this.setState({
-      formValues: {},
-    });
-    dispatch({
-      type: 'listAndtableList/fetch',
-      payload: {},
-    });
-  };
-
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listAndtableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
-  };
-
-  handleSelectRows = rows => {
-    this.setState({
-      selectedRows: rows,
-    });
-  };
-
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listAndtableList/fetch',
-        payload: values,
-      });
-    });
-  };
-
-  handleModalVisible = flag => {
-    this.setState({
-      modalVisible: !!flag,
-    });
-  };
-
-  handleUpdateModalVisible = (flag, record) => {
-    this.setState({
-      updateModalVisible: !!flag,
-      stepFormValues: record || {},
-    });
-  };
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listAndtableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listAndtableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
-
-  renderSimpleForm() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
+  return (
+    <PageHeaderWrapper>
+      <ProTable
+        headerTitle="查询表格"
+        actionRef={actionRef}
+        rowKey="key"
+        toolBarRender={(action, { selectedRows }) => [
+          <Button icon={<PlusOutlined />} type="primary" onClick={() => handleModalVisible(true)}>
+            新建
+          </Button>,
+          selectedRows && selectedRows.length > 0 && (
+            <Dropdown
+              overlay={
+                <Menu
+                  onClick={async e => {
+                    if (e.key === 'remove') {
+                      await handleRemove(selectedRows);
+                      action.reload();
+                    }
                   }}
+                  selectedKeys={[]}
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.handleFormReset}
-              >
-                重置
-              </Button>
-              <a
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.toggleForm}
-              >
-                展开 <Icon type="down" />
-              </a>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
-  renderAdvancedForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="调用次数">
-              {getFieldDecorator('number')(
-                <InputNumber
-                  style={{
-                    width: '100%',
-                  }}
-                />,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <DatePicker
-                  style={{
-                    width: '100%',
-                  }}
-                  placeholder="请输入更新日期"
-                />,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status3')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status4')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <div
-          style={{
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              float: 'right',
-              marginBottom: 24,
-            }}
-          >
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button
-              style={{
-                marginLeft: 8,
-              }}
-              onClick={this.handleFormReset}
+                  <Menu.Item key="remove">批量删除</Menu.Item>
+                  <Menu.Item key="approval">批量审批</Menu.Item>
+                </Menu>
+              }
             >
-              重置
-            </Button>
+              <Button>
+                批量操作 <DownOutlined />
+              </Button>
+            </Dropdown>
+          ),
+        ]}
+        tableAlertRender={(selectedRowKeys, selectedRows) => (
+          <div>
+            已选择{' '}
             <a
               style={{
-                marginLeft: 8,
+                fontWeight: 600,
               }}
-              onClick={this.toggleForm}
             >
-              收起 <Icon type="up" />
-            </a>
+              {selectedRowKeys.length}
+            </a>{' '}
+            项&nbsp;&nbsp;
+            <span>
+              服务调用次数总计 {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
+            </span>
           </div>
-        </div>
-      </Form>
-    );
-  }
+        )}
+        request={params => queryRule(params)}
+        columns={columns}
+        rowSelection={{}}
+      />
+      <CreateForm
+        onSubmit={async value => {
+          const success = await handleAdd(value);
 
-  renderForm() {
-    const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
-  }
+          if (success) {
+            handleModalVisible(false);
 
-  render() {
-    const {
-      listAndtableList: { data },
-      loading,
-    } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
-      </Menu>
-    );
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
-    return (
-      <PageHeaderWrapper>
-        <Card bordered={false}>
-          <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
-            </div>
-            <StandardTable
-              selectedRows={selectedRows}
-              loading={loading}
-              data={data}
-              columns={this.columns}
-              onSelectRow={this.handleSelectRows}
-              onChange={this.handleStandardTableChange}
-            />
-          </div>
-        </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
-        {stepFormValues && Object.keys(stepFormValues).length ? (
-          <UpdateForm
-            {...updateMethods}
-            updateModalVisible={updateModalVisible}
-            values={stepFormValues}
-          />
-        ) : null}
-      </PageHeaderWrapper>
-    );
-  }
-}
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      />
+      {stepFormValues && Object.keys(stepFormValues).length ? (
+        <UpdateForm
+          onSubmit={async value => {
+            const success = await handleUpdate(value);
 
-export default Form.create()(TableList);
+            if (success) {
+              handleModalVisible(false);
+              setStepFormValues({});
+
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => {
+            handleUpdateModalVisible(false);
+            setStepFormValues({});
+          }}
+          updateModalVisible={updateModalVisible}
+          values={stepFormValues}
+        />
+      ) : null}
+    </PageHeaderWrapper>
+  );
+};
+
+export default TableList;

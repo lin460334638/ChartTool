@@ -4,7 +4,6 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import router from 'umi/router';
 
-@connect()
 class Search extends Component {
   handleTabChange = key => {
     const { match } = this.props;
@@ -91,4 +90,4 @@ class Search extends Component {
   }
 }
 
-export default Search;
+export default connect()(Search);

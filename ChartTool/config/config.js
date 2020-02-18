@@ -122,18 +122,6 @@ export default {
               icon: 'dashboard',
               routes: [
                 {
-                  name: 'analysis',
-                  icon: 'smile',
-                  path: '/dashboard/analysis',
-                  component: './dashboard/analysis',
-                },
-                {
-                  name: 'monitor',
-                  icon: 'smile',
-                  path: '/dashboard/monitor',
-                  component: './dashboard/monitor',
-                },
-                {
                   name: 'workplace',
                   icon: 'smile',
                   path: '/dashboard/workplace',
@@ -172,51 +160,46 @@ export default {
               name: 'list',
               routes: [
                 {
-                  path: '/list/search',
-                  name: 'search-list',
-                  component: './list/search',
-                  routes: [
-                    {
-                      path: '/list/search',
-                      redirect: '/list/search/articles',
-                    },
-                    {
-                      name: 'articles',
-                      icon: 'smile',
-                      path: '/list/search/articles',
-                      component: './list/search/articles',
-                    },
-                    {
-                      name: 'projects',
-                      icon: 'smile',
-                      path: '/list/search/projects',
-                      component: './list/search/projects',
-                    },
-                    {
-                      name: 'applications',
-                      icon: 'smile',
-                      path: '/list/search/applications',
-                      component: './list/search/applications',
-                    },
-                  ],
-                },
-                {
-                  name: 'table-list',
+                  name: 'controller',
                   icon: 'smile',
-                  path: '/list/table-list',
+                  path: '/list/controller',
                   component: './list/table-list',
                 },
                 {
-                  name: 'basic-list',
+                  name: 'condensationFirst',
                   icon: 'smile',
-                  path: '/list/basic-list',
-                  component: './list/basic-list',
+                  path: '/list/condensationFirst',
+                  component: './list/table-list',
                 },
                 {
-                  name: 'card-list',
+                  name: 'condensationSecond',
                   icon: 'smile',
-                  path: '/list/card-list',
-                  component: './list/card-list',
+                  path: '/list/condensationSecond',
+                  component: './list/table-list',
+                },
+                {
+                  name: 'transmitter01',
+                  icon: 'smile',
+                  path: '/list/transmitter01',
+                  component: './list/table-list',
+                },
+                {
+                  name: 'transmitter02',
+                  icon: 'smile',
+                  path: '/list/transmitter02',
+                  component: './list/table-list',
+                },
+                {
+                  name: 'transmitter03',
+                  icon: 'smile',
+                  path: '/list/transmitter03',
+                  component: './list/table-list',
+                },
+                {
+                  name: 'transmitter04',
+                  icon: 'smile',
+                  path: '/list/transmitter04',
+                  component: './list/table-list',
                 },
               ],
             },
@@ -306,26 +289,7 @@ export default {
               name: 'editor',
               icon: 'highlight',
               path: '/editor',
-              routes: [
-                {
-                  name: 'flow',
-                  icon: 'smile',
-                  path: '/editor/flow',
-                  component: './editor/flow',
-                },
-                {
-                  name: 'mind',
-                  icon: 'smile',
-                  path: '/editor/mind',
-                  component: './editor/mind',
-                },
-                {
-                  name: 'koni',
-                  icon: 'smile',
-                  path: '/editor/koni',
-                  component: './editor/koni',
-                },
-              ],
+              routes: [],
             },
             {
               path: '/',

@@ -1,5 +1,6 @@
-import { Avatar, Card, Col, Divider, Icon, Input, Row, Tag } from 'antd';
-import React, { PureComponent } from 'react';
+import { PlusOutlined } from '@ant-design/icons';
+import { Avatar, Card, Col, Divider, Input, Row, Tag } from 'antd';
+import React, { Component } from 'react';
 import { GridContent } from '@ant-design/pro-layout';
 import Link from 'umi/link';
 import { connect } from 'dva';
@@ -56,11 +57,7 @@ const operationTabList = [
   },
 ];
 
-@connect(({ loading, accountAndcenter }) => ({
-  currentUser: accountAndcenter.currentUser,
-  currentUserLoading: loading.effects['accountAndcenter/fetchCurrent'],
-}))
-class Center extends PureComponent {
+class Center extends Component {
   // static getDerivedStateFromProps(
   //   props: accountAndcenterProps,
   //   state: accountAndcenterState,
@@ -162,8 +159,8 @@ class Center extends PureComponent {
   };
 
   render() {
-    const { newTags, inputVisible, inputValue, tabKey } = this.state;
-    const { currentUser, currentUserLoading } = this.props;
+    const { newTags = [], inputVisible, inputValue, tabKey } = this.state;
+    const { currentUser = {}, currentUserLoading } = this.props;
     const dataLoading = currentUserLoading || !(currentUser && Object.keys(currentUser).length);
     return (
       <GridContent>
@@ -194,14 +191,30 @@ class Center extends PureComponent {
                     </p>
                     <p>
                       <i className={styles.address} />
-                      {currentUser.geographic.province.label}
-                      {currentUser.geographic.city.label}
+                      {
+                        (
+                          currentUser.geographic || {
+                            province: {
+                              label: '',
+                            },
+                          }
+                        ).province.label
+                      }
+                      {
+                        (
+                          currentUser.geographic || {
+                            city: {
+                              label: '',
+                            },
+                          }
+                        ).city.label
+                      }
                     </p>
                   </div>
                   <Divider dashed />
                   <div className={styles.tags}>
                     <div className={styles.tagsTitle}>标签</div>
-                    {currentUser.tags.concat(newTags).map(item => (
+                    {(currentUser.tags || []).concat(newTags).map(item => (
                       <Tag key={item.key}>{item.label}</Tag>
                     ))}
                     {inputVisible && (
@@ -226,7 +239,7 @@ class Center extends PureComponent {
                           borderStyle: 'dashed',
                         }}
                       >
-                        <Icon type="plus" />
+                        <PlusOutlined />
                       </Tag>
                     )}
                   </div>
@@ -271,4 +284,7 @@ class Center extends PureComponent {
   }
 }
 
-export default Center;
+export default connect(({ loading, accountAndcenter }) => ({
+  currentUser: accountAndcenter.currentUser,
+  currentUserLoading: loading.effects['accountAndcenter/fetchCurrent'],
+}))(Center);

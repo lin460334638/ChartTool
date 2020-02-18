@@ -3,7 +3,7 @@ import { fakeChartData, queryActivities, queryCurrent, queryProjectNotice } from
 const Model = {
   namespace: 'dashboardAndworkplace',
   state: {
-    currentUser: {},
+    currentUser: undefined,
     projectNotice: [],
     activities: [],
     radarData: [],
@@ -71,7 +71,7 @@ const Model = {
 
     clear() {
       return {
-        currentUser: {},
+        currentUser: undefined,
         projectNotice: [],
         activities: [],
         radarData: [],

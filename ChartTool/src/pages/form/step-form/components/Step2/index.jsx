@@ -1,5 +1,5 @@
-import { Alert, Button, Descriptions, Divider, Statistic, Form, Input } from 'antd';
 import React from 'react';
+import { Form, Alert, Button, Descriptions, Divider, Statistic, Input } from 'antd';
 import { connect } from 'dva';
 import styles from './index.less';
 
@@ -13,13 +13,14 @@ const formItemLayout = {
 };
 
 const Step2 = props => {
-  const { form, data, dispatch, submitting } = props;
+  const [form] = Form.useForm();
+  const { data, dispatch, submitting } = props;
 
   if (!data) {
     return null;
   }
 
-  const { getFieldDecorator, validateFields, getFieldsValue } = form;
+  const { validateFields, getFieldsValue } = form;
 
   const onPrev = () => {
     if (dispatch) {
@@ -35,23 +36,28 @@ const Step2 = props => {
     }
   };
 
-  const onValidateForm = e => {
-    e.preventDefault();
-    validateFields((err, values) => {
-      if (!err) {
-        if (dispatch) {
-          dispatch({
-            type: 'formAndstepForm/submitStepForm',
-            payload: { ...data, ...values },
-          });
-        }
-      }
-    });
+  const onValidateForm = async () => {
+    const values = await validateFields();
+
+    if (dispatch) {
+      dispatch({
+        type: 'formAndstepForm/submitStepForm',
+        payload: { ...data, ...values },
+      });
+    }
   };
 
   const { payAccount, receiverAccount, receiverName, amount } = data;
   return (
-    <Form layout="horizontal" className={styles.stepForm}>
+    <Form
+      {...formItemLayout}
+      form={form}
+      layout="horizontal"
+      className={styles.stepForm}
+      initialValues={{
+        password: '123456',
+      }}
+    >
       <Alert
         closable
         showIcon
@@ -73,24 +79,24 @@ const Step2 = props => {
           margin: '24px 0',
         }}
       />
-      <Form.Item {...formItemLayout} label="支付密码" required={false}>
-        {getFieldDecorator('password', {
-          initialValue: '123456',
-          rules: [
-            {
-              required: true,
-              message: '需要支付密码才能进行支付',
-            },
-          ],
-        })(
-          <Input
-            type="password"
-            autoComplete="off"
-            style={{
-              width: '80%',
-            }}
-          />,
-        )}
+      <Form.Item
+        label="支付密码"
+        name="password"
+        required={false}
+        rules={[
+          {
+            required: true,
+            message: '需要支付密码才能进行支付',
+          },
+        ]}
+      >
+        <Input
+          type="password"
+          autoComplete="off"
+          style={{
+            width: '80%',
+          }}
+        />
       </Form.Item>
       <Form.Item
         style={{
@@ -106,7 +112,6 @@ const Step2 = props => {
             offset: formItemLayout.labelCol.span,
           },
         }}
-        label=""
       >
         <Button type="primary" onClick={onValidateForm} loading={submitting}>
           提交
@@ -127,4 +132,4 @@ const Step2 = props => {
 export default connect(({ formAndstepForm, loading }) => ({
   submitting: loading.effects['formAndstepForm/submitStepForm'],
   data: formAndstepForm.step,
-}))(Form.create()(Step2));
+}))(Step2);
