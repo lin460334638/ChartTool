@@ -11,7 +11,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'Ant Design Pro',
+  title: '蓝天填报系统V1.0',
   pwa: false,
   iconfontUrl: '',
 };

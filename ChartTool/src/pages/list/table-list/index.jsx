@@ -1,7 +1,24 @@
 import { DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Dropdown, Menu, message } from 'antd';
+import react from 'react'
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Divider,
+  Dropdown,
+  Form,
+  Input,
+  Menu,
+  message,
+  Popconfirm,
+  Row,
+  Table
+} from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import styles from './index.less'
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
@@ -10,229 +27,255 @@ import { queryRule, updateRule, addRule, removeRule } from './service';
  * 添加节点
  * @param fields
  */
-
-const handleAdd = async fields => {
-  const hide = message.loading('正在添加');
-
-  try {
-    await addRule({
-      desc: fields.desc,
-    });
-    hide();
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('添加失败请重试！');
-    return false;
+const user = [
+  {
+    key:1,
+    name:'lin',
+    desc:'lin1'
+  },
+  {
+    key:2,
+    name:'meng',
+    desc:'lin2'
   }
-};
-/**
- * 更新节点
- * @param fields
- */
+];
+const EditableContext = React.createContext();
 
-const handleUpdate = async fields => {
-  const hide = message.loading('正在配置');
+class EditableCell extends React.Component {
+  getInput = () => {
 
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-    message.success('配置成功');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('配置失败请重试！');
-    return false;
-  }
-};
-/**
- *  删除节点
- * @param selectedRows
- */
+    return <Input />;
+  };
 
-const handleRemove = async selectedRows => {
-  const hide = message.loading('正在删除');
-  if (!selectedRows) return true;
-
-  try {
-    await removeRule({
-      key: selectedRows.map(row => row.key),
-    });
-    hide();
-    message.success('删除成功，即将刷新');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('删除失败，请重试');
-    return false;
-  }
-};
-
-const TableList = () => {
-  const [createModalVisible, handleModalVisible] = useState(false);
-  const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [stepFormValues, setStepFormValues] = useState({});
-  const actionRef = useRef();
-  const columns = [
-    {
-      title: '规则名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '描述',
-      dataIndex: 'desc',
-    },
-    {
-      title: '服务调用次数',
-      dataIndex: 'callNo',
-      sorter: true,
-      renderText: val => `${val} 万`,
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      valueEnum: {
-        0: {
-          text: '关闭',
-          status: 'Default',
-        },
-        1: {
-          text: '运行中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已上线',
-          status: 'Success',
-        },
-        3: {
-          text: '异常',
-          status: 'Error',
-        },
-      },
-    },
-    {
-      title: '上次调度时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      valueType: 'dateTime',
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => (
-        <>
-          <a
-            onClick={() => {
-              handleUpdateModalVisible(true);
-              setStepFormValues(record);
-            }}
-          >
-            配置
-          </a>
-          <Divider type="vertical" />
-          <a href="">订阅警报</a>
-        </>
-      ),
-    },
-  ];
-  return (
-    <PageHeaderWrapper>
-      <ProTable
-        headerTitle="查询表格"
-        actionRef={actionRef}
-        rowKey="key"
-        toolBarRender={(action, { selectedRows }) => [
-          <Button icon={<PlusOutlined />} type="primary" onClick={() => handleModalVisible(true)}>
-            新建
-          </Button>,
-          selectedRows && selectedRows.length > 0 && (
-            <Dropdown
-              overlay={
-                <Menu
-                  onClick={async e => {
-                    if (e.key === 'remove') {
-                      await handleRemove(selectedRows);
-                      action.reload();
-                    }
-                  }}
-                  selectedKeys={[]}
-                >
-                  <Menu.Item key="remove">批量删除</Menu.Item>
-                  <Menu.Item key="approval">批量审批</Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                批量操作 <DownOutlined />
-              </Button>
-            </Dropdown>
-          ),
-        ]}
-        tableAlertRender={(selectedRowKeys, selectedRows) => (
-          <div>
-            已选择{' '}
-            <a
-              style={{
-                fontWeight: 600,
-              }}
-            >
-              {selectedRowKeys.length}
-            </a>{' '}
-            项&nbsp;&nbsp;
-            <span>
-              服务调用次数总计 {selectedRows.reduce((pre, item) => pre + item.callNo, 0)} 万
-            </span>
-          </div>
+  renderCell = ({ getFieldDecorator }) => {
+    const {
+      editing,
+      dataIndex,
+      title,
+      inputType,
+      record,
+      index,
+      children,
+      ...restProps
+    } = this.props;
+    return (
+      <td {...restProps}>
+        {editing ? (
+          <Form.Item style={{ margin: 0 }}>
+            {getFieldDecorator(dataIndex, {
+              rules: [
+                {
+                  required: true,
+                  message: `Please Input ${title}!`,
+                },
+              ],
+              initialValue: record[dataIndex],
+            })(this.getInput())}
+          </Form.Item>
+        ) : (
+          children
         )}
-        request={params => queryRule(params)}
-        columns={columns}
-        rowSelection={{}}
-      />
-      <CreateForm
-        onSubmit={async value => {
-          const success = await handleAdd(value);
+      </td>
+    );
+  };
 
-          if (success) {
-            handleModalVisible(false);
+  render() {
+    return <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>;
+  }
+}
+class TableList extends react.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      data:user,
+      editingKey: '',
+      userInfo:user,
+      columns:[
+        {
+          title: '规则名称',
+          dataIndex: 'name',
+          editable:true
+        },
+        {
+          title: '描述',
+          dataIndex: 'desc',
+          editable: true
+        },
+        {
+          title: '服务调用次数',
+          dataIndex: 'callNo',
+        },
+        {
+          title: '状态',
+          dataIndex: 'status',
+          valueEnum: {
+            0: {
+              text: '关闭',
+              status: 'Default',
+            },
+            1: {
+              text: '运行中',
+              status: 'Processing',
+            },
+            2: {
+              text: '已上线',
+              status: 'Success',
+            },
+            3: {
+              text: '异常',
+              status: 'Error',
+            },
+          },
+        },
+        {
+          title: '上次调度时间',
+          dataIndex: 'updatedAt',
+          sorter: true,
+          valueType: 'dateTime',
+        },
+        {
+          title: 'operation',
+          dataIndex: 'operation',
+          render: (text, record) => {
+            const { editingKey } = this.state;
+            const editable = this.isEditing(record);
+            return editable ? (
+              <span>
+              <EditableContext.Consumer>
+                {form => (
+                  <a
+                    onClick={() => this.save(form, record.key)}
+                    style={{ marginRight: 8 }}
+                  >
+                    Save
+                  </a>
+                )}
+              </EditableContext.Consumer>
+              <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
+                <a>Cancel</a>
+              </Popconfirm>
+            </span>
+            ) : (
+              <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
+                Edit
+              </a>
+            );
+          },
+        },
+      ]
+    };
+  }
+    addTableRow=()=> {
+      const {userInfo} = this.state;
+      this.setState({userInfo:[...userInfo,{key:userInfo.length+1,name:'',desc:''}]});
+    };
+  isEditing = record => record.key === this.state.editingKey;
 
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => handleModalVisible(false)}
-        modalVisible={createModalVisible}
-      />
-      {stepFormValues && Object.keys(stepFormValues).length ? (
-        <UpdateForm
-          onSubmit={async value => {
-            const success = await handleUpdate(value);
+  cancel = () => {
+    this.setState({ editingKey: '' });
+  };
 
-            if (success) {
-              handleModalVisible(false);
-              setStepFormValues({});
+  save(form, key) {
+    form.validateFields((error, row) => {
+      if (error) {
+        return;
+      }
+      const newData = [...this.state.data];
+      const index = newData.findIndex(item => key === item.key);
+      if (index > -1) {
+        const item = newData[index];
+        newData.splice(index, 1, {
+          ...item,
+          ...row,
+        });
+        this.setState({ data: newData, editingKey: '' });
+      } else {
+        newData.push(row);
+        this.setState({ data: newData, editingKey: '' });
+      }
+    });
+  }
 
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          onCancel={() => {
-            handleUpdateModalVisible(false);
-            setStepFormValues({});
-          }}
-          updateModalVisible={updateModalVisible}
-          values={stepFormValues}
-        />
-      ) : null}
-    </PageHeaderWrapper>
-  );
+  edit(key) {
+    this.setState({ editingKey: key });
+  }
+  render(){
+    const {userInfo,columns} = this.state;
+    const components = {
+      body: {
+        cell: EditableCell,
+      },
+    };
+    const newcolumns = columns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => ({
+          record,
+          dataIndex: col.dataIndex,
+          title: col.title,
+          editing: this.isEditing(record),
+        }),
+      };
+    });
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 19 },
+      },
+    };
+    return (
+      <PageHeaderWrapper>
+        <div className={'form-search'} style={{height: 70}}>
+          <Form {...formItemLayout}>
+            <Row style={{marginLeft:'-8px',marginRight:'-8px'}}>
+              <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
+                <Form.Item
+                  label="日期"
+                  name="desc"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入至少五个字符的规则描述！',
+                      min: 5,
+                    },
+                  ]}
+                >
+                  <DatePicker placeholder="请输入" mode={'month'}/>
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
+                <Button type={'primary'} style={{marginRight:8}}>查询</Button>
+                <Button>重置</Button>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+        <div>
+          <Alert message={'xxxx年 xx月'} style={{marginBottom:5}}/>
+          {console.log(userInfo)}
+          <EditableContext.Provider value={this.props.form}>
+            <Table
+              components={components}
+              className={'font-small-table'}
+              columns={newcolumns}
+              pagination={false}
+              key={'name'}
+              dataSource={userInfo}
+            />
+          </EditableContext.Provider>
+        </div>
+        <Button type="dashed" style={{marginTop:8,width:'100%'}} onClick={this.addTableRow}><strong>+</strong></Button>
+      </PageHeaderWrapper>
+    );
+  }
 };
 
-export default TableList;
+export default Form.create()(TableList);
