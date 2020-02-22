@@ -14,7 +14,10 @@ import {
   message,
   Popconfirm,
   Row,
-  Table
+  Table,
+  Switch, 
+  Icon,
+  Checkbox 
 } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -43,8 +46,12 @@ const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
   getInput = () => {
-
-    return <Input />;
+    // return <Input/>
+    return <Checkbox >确认</Checkbox>
+  //   <Switch
+  //   checkedChildren={<Icon type="check" />}
+  //   unCheckedChildren={<Icon type="close" />}
+  // />;
   };
 
   renderCell = ({ getFieldDecorator }) => {
@@ -63,18 +70,20 @@ class EditableCell extends React.Component {
         {editing ? (
           <Form.Item style={{ margin: 0 }}>
             {getFieldDecorator(dataIndex, {
-              rules: [
-                {
-                  required: true,
-                  message: `Please Input ${title}!`,
-                },
-              ],
+              // rules: [
+              //   {
+              //     required: true,
+              //     message: `Please Input ${title}!`,
+              //   },
+              // ],
               initialValue: record[dataIndex],
             })(this.getInput())}
           </Form.Item>
         ) : (
           children
-        )}
+        )
+        
+        }
       </td>
     );
   };
@@ -92,46 +101,54 @@ class TableList extends react.Component{
       userInfo:user,
       columns:[
         {
-          title: '规则名称',
-          dataIndex: 'name',
+          title: '日期',
+          dataIndex: 'date',
           editable:true
         },
         {
-          title: '描述',
-          dataIndex: 'desc',
+          title: '时间',
+          dataIndex: 'time',
           editable: true
         },
         {
-          title: '服务调用次数',
-          dataIndex: 'callNo',
+          title: '音频光端机',
+          dataIndex: 'ypgdj',
+          editable: true
         },
         {
-          title: '状态',
-          dataIndex: 'status',
-          valueEnum: {
-            0: {
-              text: '关闭',
-              status: 'Default',
-            },
-            1: {
-              text: '运行中',
-              status: 'Processing',
-            },
-            2: {
-              text: '已上线',
-              status: 'Success',
-            },
-            3: {
-              text: '异常',
-              status: 'Error',
-            },
-          },
+          title: '音频二选一',
+          dataIndex: 'ypexy',
+          editable: true
         },
         {
-          title: '上次调度时间',
-          dataIndex: 'updatedAt',
-          sorter: true,
-          valueType: 'dateTime',
+          title: '手动节目源选择',
+          dataIndex: 'sdjmyxz',
+          editable: true
+        },
+        {
+          title: '运维系统',
+          dataIndex: 'ywxt',
+          editable: true
+        },
+        {
+          title: '频率调度系统',
+          dataIndex: 'plddxt',
+          editable: true
+        },
+        {
+          title: '监控系统',
+          dataIndex: 'jkxt',
+          editable: true
+        },
+        {
+          title: '天控系统',
+          dataIndex: 'tkxt',
+          editable: true
+        },
+        {
+          title: '恒温系统',
+          dataIndex: 'hwxt',
+          editable: true
         },
         {
           title: 'operation',
@@ -147,17 +164,17 @@ class TableList extends react.Component{
                     onClick={() => this.save(form, record.key)}
                     style={{ marginRight: 8 }}
                   >
-                    Save
+                    保存
                   </a>
                 )}
               </EditableContext.Consumer>
               <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
-                <a>Cancel</a>
+                <a>取消</a>
               </Popconfirm>
             </span>
             ) : (
               <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-                Edit
+                修改
               </a>
             );
           },
@@ -200,7 +217,7 @@ class TableList extends react.Component{
     this.setState({ editingKey: key });
   }
   render(){
-    const {userInfo,columns} = this.state;
+    const {userInfo,columns,data} = this.state;
     const components = {
       body: {
         cell: EditableCell,
@@ -268,7 +285,7 @@ class TableList extends react.Component{
               columns={newcolumns}
               pagination={false}
               key={'name'}
-              dataSource={userInfo}
+              dataSource={data}
             />
           </EditableContext.Provider>
         </div>
@@ -279,3 +296,7 @@ class TableList extends react.Component{
 };
 
 export default Form.create()(TableList);
+
+ 
+  
+
