@@ -46,12 +46,11 @@ const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
   getInput = () => {
-    return <Input/>
-    // return <Checkbox >确认</Checkbox>
-    // <Switch
-    // checkedChildren={<Icon type="check" />}
-    // unCheckedChildren={<Icon type="close" />
-  // }
+    // return <Input/>
+    return <Checkbox >确认</Checkbox>
+  //   <Switch
+  //   checkedChildren={<Icon type="check" />}
+  //   unCheckedChildren={<Icon type="close" />}
   // />;
   };
 
@@ -112,70 +111,84 @@ class TableList extends react.Component{
           editable: true
         },
         {
-          title: '音频光端机',
-          dataIndex: 'ypgdj',
+          title: '运行频率（KHz）',
+          dataIndex: 'yxpl',
           editable: true
         },
         {
-          title: '音频二选一',
-          dataIndex: 'ypexy',
+          title: '面板表值',
+          dataIndex: 'mbbz',
           editable: true
         },
         {
-          title: '手动节目源选择',
-          dataIndex: 'sdjmyxz',
+          title: '面板指示',
+          dataIndex: 'mbzs',
           editable: true
         },
         {
-          title: '运维系统',
-          dataIndex: 'ywxt',
+          title: '频率合成器输出电平',
+          dataIndex: 'plhcqscdp',
           editable: true
         },
         {
-          title: '频率调度系统',
-          dataIndex: 'plddxt',
+          title: '频率计数器',
+          dataIndex: 'pljsq',
           editable: true
         },
         {
-          title: '监控系统',
-          dataIndex: 'jkxt',
+          title: '水阻',
+          dataIndex: 'sz',
           editable: true
         },
         {
-          title: '天控系统',
-          dataIndex: 'tkxt',
+          title: '九单元指示',
+          dataIndex: 'jdyzs',
           editable: true
         },
         {
-          title: '恒温系统',
-          dataIndex: 'hwxt',
+          title: '出水水温/水压',
+          dataIndex: 'csswsy',
           editable: true
         },
         {
-          title: '质量保证系统',
-          dataIndex: 'zlbzxt',
+          title: '水泵',
+          dataIndex: 'sb',
           editable: true
         },
         {
-          title: '调幅度检测仪',
-          dataIndex: 'tfdjcy',
+          title: '风机',
+          dataIndex: 'fj',
           editable: true
         },
         {
-          title: '音频处理器',
-          dataIndex: 'ypclq',
+          title: '水路',
+          dataIndex: 'sl',
           editable: true
         },
         {
-          title: '高压指示',
-          dataIndex: 'gyzs',
+          title: '水电机箱各元器件',
+          dataIndex: 'sdjxgyqj',
+          editable: true
+        },
+        {
+          title: '射频机箱各元器件',
+          dataIndex: 'spjxgyqj',
+          editable: true
+        },
+        {
+          title: '四单元各元器件',
+          dataIndex: 'sdygyqj',
+          editable: true
+        },
+        {
+          title: '功率模块',
+          dataIndex: 'glmk',
           editable: true
         },
         {
           title: '操作',
           fixed: "right",
           dataIndex: 'operation',
-          width: 100,
           render: (text, record) => {
             const { editingKey } = this.state;
             const editable = this.isEditing(record);
@@ -309,7 +322,7 @@ class TableList extends react.Component{
               pagination={false}
               key={'name'}
               dataSource={data}
-              scroll={{ x: 2000 }}
+              scroll={{ x: 1300 }}
             />
           </EditableContext.Provider>
         </div>
