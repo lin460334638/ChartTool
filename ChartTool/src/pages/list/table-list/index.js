@@ -17,15 +17,15 @@ import {
   Table,
   Switch, 
   Icon,
-  Checkbox 
+  Checkbox,
+  ConfigProvider
 } from 'antd';
+import zhCN from 'antd/es/date-picker/locale/zh_CN';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import styles from './index.less'
-import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
-import UpdateForm from './components/UpdateForm';
-import { queryRule, updateRule, addRule, removeRule } from './service';
+import moment from 'moment';
+const {MonthPicker} = DatePicker;
+moment.locale("zh-cn");
 /**
  * 添加节点
  * @param fields
@@ -33,26 +33,50 @@ import { queryRule, updateRule, addRule, removeRule } from './service';
 const user = [
   {
     key:1,
-    name:'lin',
-    desc:'lin1'
+    date:'2020-02-24',
+    time:'17:15:24',
+    ypgdj:1,
+    ypexy:1,
+    sdjmyxz:1,
+    ywxt:1,
+    plddxt:1,
+    jkxt:1,
+    tkxt:1,
+    hwxt:1,
+    dpm:1,
+    zlbzxt:1,
+    tfdjcy:1,
+    ypclq:1,
+    gyzs:1,
+    operator:'杨韬',
+    isEdit:0
   },
   {
     key:2,
-    name:'meng',
-    desc:'lin2'
+    date:'2020-02-25',
+    time:'16:15:24',
+    ypgdj:1,
+    ypexy:1,
+    sdjmyxz:1,
+    ywxt:1,
+    plddxt:1,
+    jkxt:1,
+    tkxt:1,
+    hwxt:1,
+    dpm:1,
+    zlbzxt:1,
+    tfdjcy:1,
+    ypclq:1,
+    gyzs:1,
+    operator:'杨韬',
+    isEdit:0
   }
 ];
 const EditableContext = React.createContext();
 
 class EditableCell extends React.Component {
-  getInput = () => {
-    return <Input/>
-    // return <Checkbox >确认</Checkbox>
-    // <Switch
-    // checkedChildren={<Icon type="check" />}
-    // unCheckedChildren={<Icon type="close" />
-  // }
-  // />;
+  getComponent = () => {
+     return <Checkbox >确认</Checkbox>
   };
 
   renderCell = ({ getFieldDecorator }) => {
@@ -77,8 +101,8 @@ class EditableCell extends React.Component {
               //     message: `Please Input ${title}!`,
               //   },
               // ],
-              initialValue: record[dataIndex],
-            })(this.getInput())}
+              initialValue: false,
+            })(this.getComponent())}
           </Form.Item>
         ) : (
           children
@@ -99,77 +123,179 @@ class TableList extends react.Component{
     this.state = {
       data:user,
       editingKey: '',
-      userInfo:user,
       columns:[
         {
           title: '日期',
           dataIndex: 'date',
-          editable:true
+          width:120,
+          align:'center',
         },
         {
           title: '时间',
           dataIndex: 'time',
-          editable: true
+          width:120,
+          align:'center',
         },
         {
           title: '音频光端机',
           dataIndex: 'ypgdj',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text===1) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(text===0){
+              return;
+            }
+          }
         },
         {
           title: '音频二选一',
           dataIndex: 'ypexy',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '手动节目源选择',
           dataIndex: 'sdjmyxz',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '运维系统',
           dataIndex: 'ywxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '频率调度系统',
           dataIndex: 'plddxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '监控系统',
           dataIndex: 'jkxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '天控系统',
           dataIndex: 'tkxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '恒温系统',
           dataIndex: 'hwxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '质量保证系统',
           dataIndex: 'zlbzxt',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '调幅度检测仪',
           dataIndex: 'tfdjcy',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '音频处理器',
           dataIndex: 'ypclq',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
         },
         {
           title: '高压指示',
           dataIndex: 'gyzs',
-          editable: true
+          width:100,
+          editable: true,
+          render:(text,record)=>{
+            if(text) {
+              return <Checkbox disabled checked={text?true:false}>确认</Checkbox>
+            }else if(!text){
+              return;
+            }
+          }
+        },
+        {
+          title: '抄表人',
+          dataIndex: 'operator',
+          width:100,
         },
         {
           title: '操作',
@@ -179,8 +305,9 @@ class TableList extends react.Component{
           render: (text, record) => {
             const { editingKey } = this.state;
             const editable = this.isEditing(record);
-            return editable ? (
-              <span>
+            if(record['isEdit']){
+              return editable? (
+                <span>
               <EditableContext.Consumer>
                 {form => (
                   <a
@@ -191,23 +318,48 @@ class TableList extends react.Component{
                   </a>
                 )}
               </EditableContext.Consumer>
-              <Popconfirm title="Sure to cancel?" onConfirm={() => this.cancel(record.key)}>
+              <Popconfirm title="是否取消编辑?" onConfirm={() => this.cancel(record.key)}>
                 <a>取消</a>
               </Popconfirm>
             </span>
-            ) : (
-              <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-                修改
-              </a>
-            );
+              ) : (
+                <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
+                  修改
+                </a>
+              );
+            }else{
+              return;
+            }
+
           },
         },
       ]
     };
   }
     addTableRow=()=> {
-      const {userInfo} = this.state;
-      this.setState({userInfo:[...userInfo,{key:userInfo.length+1,name:'',desc:''}]});
+      const {data} = this.state;
+      this.setState({data:[...data,
+          {
+            key:data.length+1,
+            date:'',
+            time:'',
+            ypgdj:0,
+            ypexy:0,
+            sdjmyxz:0,
+            ywxt:0,
+            plddxt:0,
+            jkxt:0,
+            tkxt:0,
+            hwxt:0,
+            dpm:0,
+            zlbzxt:0,
+            tfdjcy:0,
+            ypclq:0,
+            gyzs:0,
+            operator:'杨韬',
+            isEdit:1
+          },
+        ]});
     };
   isEditing = record => record.key === this.state.editingKey;
 
@@ -222,6 +374,9 @@ class TableList extends react.Component{
       }
       const newData = [...this.state.data];
       const index = newData.findIndex(item => key === item.key);
+      row.isEdit = 0;
+      row['date'] = moment().format('YYYY-MM-DD');
+      row['time'] = moment().format('HH:mm:ss')
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -240,7 +395,8 @@ class TableList extends react.Component{
     this.setState({ editingKey: key });
   }
   render(){
-    const {userInfo,columns,data} = this.state;
+    const {columns,data} = this.state;
+    const {getFieldDecorator} = this.props.form;
     const components = {
       body: {
         cell: EditableCell,
@@ -288,7 +444,10 @@ class TableList extends react.Component{
                     },
                   ]}
                 >
-                  <DatePicker placeholder="请输入" mode={'month'}/>
+                  {getFieldDecorator('date', {
+                    initialValue: moment()
+                  })( <MonthPicker locale={zhCN} placeholder="请输入" />)}
+
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
@@ -299,17 +458,16 @@ class TableList extends react.Component{
           </Form>
         </div>
         <div>
-          <Alert message={'xxxx年 xx月'} style={{marginBottom:5}}/>
-          {console.log(userInfo)}
+          <Alert message={'2020年 02月'} style={{marginBottom:5}}/>
           <EditableContext.Provider value={this.props.form}>
             <Table
               components={components}
               className={'font-small-table'}
               columns={newcolumns}
               pagination={false}
-              key={'name'}
+              rowKey={'key'}
               dataSource={data}
-              scroll={{ x: 2000 }}
+              scroll={{ x: 1740 }}
             />
           </EditableContext.Provider>
         </div>

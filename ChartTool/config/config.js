@@ -129,7 +129,7 @@ export default {
                 },
               ],
             },
-            {
+            /*{
               path: '/form',
               icon: 'form',
               name: 'form',
@@ -153,7 +153,7 @@ export default {
                   component: './form/advanced-form',
                 },
               ],
-            },
+            },*/
             {
               path: '/list',
               icon: 'table',
@@ -163,47 +163,47 @@ export default {
                   name: 'controller',
                   icon: 'smile',
                   path: '/list/controller',
-                  component: './list/table-list',
+                  component: './list/table-list/index',
                 },
                 {
                   name: 'condensationFirst',
                   icon: 'smile',
                   path: '/list/condensationFirst',
-                  component: './list/table-list3',
+                  component: './list/table-list3/index',
                 },
                 {
                   name: 'condensationSecond',
                   icon: 'smile',
                   path: '/list/condensationSecond',
-                  component: './list/table-list3',
+                  component: './list/table-list3/index',
                 },
                 {
                   name: 'transmitter01',
                   icon: 'smile',
                   path: '/list/transmitter01',
-                  component: './list/table-list2',
+                  component: './list/table-list2/index',
                 },
                 {
                   name: 'transmitter02',
                   icon: 'smile',
                   path: '/list/transmitter02',
-                  component: './list/table-list2',
+                  component: './list/table-list2/index',
                 },
                 {
                   name: 'transmitter03',
                   icon: 'smile',
                   path: '/list/transmitter03',
-                  component: './list/table-list2',
+                  component: './list/table-list2/index',
                 },
                 {
                   name: 'transmitter04',
                   icon: 'smile',
                   path: '/list/transmitter04',
-                  component: './list/table-list2',
+                  component: './list/table-list2/index',
                 },
               ],
             },
-            {
+            /*{
               path: '/profile',
               name: 'profile',
               icon: 'profile',
@@ -265,7 +265,7 @@ export default {
                   component: './exception/500',
                 },
               ],
-            },
+            },*/
             {
               name: 'account',
               icon: 'user',
@@ -285,12 +285,12 @@ export default {
                 },
               ],
             },
-            {
+           /* {
               name: 'editor',
               icon: 'highlight',
               path: '/editor',
               routes: [],
-            },
+            },*/
             {
               path: '/',
               redirect: '/dashboard/workplace',
