@@ -24,6 +24,7 @@ import zhCN from 'antd/es/date-picker/locale/zh_CN';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import moment from 'moment';
+import styles from './index.less'
 const {MonthPicker} = DatePicker;
 moment.locale("zh-cn");
 /**
@@ -324,7 +325,7 @@ class TableList extends react.Component{
             </span>
               ) : (
                 <a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-                  修改
+                  编辑
                 </a>
               );
             }else{
@@ -458,7 +459,8 @@ class TableList extends react.Component{
           </Form>
         </div>
         <div>
-          <Alert message={'2020年 02月'} style={{marginBottom:5}}/>
+          <Button type={'primary'} style={{float:'right',marginBottom:8}}>导出</Button>
+          {/*<Alert message={'2020年 02月'} style={{marginBottom:5}}/>*/}
           <EditableContext.Provider value={this.props.form}>
             <Table
               components={components}
