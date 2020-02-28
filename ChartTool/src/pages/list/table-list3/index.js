@@ -25,7 +25,6 @@ import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import moment from 'moment';
 import styles from './index.less'
-const {MonthPicker} = DatePicker;
 moment.locale("zh-cn");
 /**
  * 添加节点
@@ -443,7 +442,7 @@ class TableList extends react.Component{
                 >
                   {getFieldDecorator('date', {
                     initialValue: moment()
-                  })( <MonthPicker locale={zhCN} placeholder="请输入" />)}
+                  })( <DatePicker locale={zhCN} placeholder="请输入" />)}
 
                 </Form.Item>
               </Col>

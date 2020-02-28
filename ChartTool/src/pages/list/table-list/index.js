@@ -25,7 +25,6 @@ import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import moment from 'moment';
 import styles from './index.less'
-const {MonthPicker} = DatePicker;
 moment.locale("zh-cn");
 /**
  * 添加节点
@@ -395,6 +394,10 @@ class TableList extends react.Component{
   edit(key) {
     this.setState({ editingKey: key });
   }
+  disabledDate = (current)=> {         /** 无法选择今天过后的日子**/
+  rrent > moment().endOf('day');
+    return cu
+  };
   render(){
     const {columns,data} = this.state;
     const {getFieldDecorator} = this.props.form;
@@ -447,7 +450,7 @@ class TableList extends react.Component{
                 >
                   {getFieldDecorator('date', {
                     initialValue: moment()
-                  })( <MonthPicker locale={zhCN} placeholder="请输入" />)}
+                  })( <DatePicker locale={zhCN} placeholder="请输入" disabledDate={this.disabledDate}/>)}
 
                 </Form.Item>
               </Col>

@@ -91,7 +91,7 @@ export default {
               name: 'login',
               icon: 'smile',
               path: '/user/login',
-              component: './user/login',
+              component: './user/login/index',
             },
             {
               name: 'register-result',
