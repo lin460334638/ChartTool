@@ -108,7 +108,7 @@ const Login = props => {
           </a>
         </div>
         {/*<Submit loading={submitting}>登录</Submit>*/}
-        <Button type={'primary'} loading={submitting} onClick={handleSubmit}>登录</Button>
+        <Button type={'primary'} loading={submitting} style={{width:'100%',marginTop:10}} onClick={handleSubmit}>登录</Button>
        {/* <div className={styles.other}>
           其他登录方式
           <AlipayCircleOutlined className={styles.icon} />
