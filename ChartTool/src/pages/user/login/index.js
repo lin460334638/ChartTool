@@ -5,7 +5,7 @@ import { Link } from 'umi';
 import { connect } from 'dva';
 import styles from './style.less';
 import LoginFrom from './components/Login';
-
+import router from 'umi/router';
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginFrom;
 
 const LoginMessage = ({ content }) => (
@@ -26,11 +26,12 @@ const Login = props => {
   const [type, setType] = useState('account');
 
   const handleSubmit = values => {
-    const { dispatch } = props;
+    /*const { dispatch } = props;
     dispatch({
       type: 'userAndlogin/login',
       payload: { ...values, type },
-    });
+    });*/
+    router.push('/list/controller');
   };
 
   return (

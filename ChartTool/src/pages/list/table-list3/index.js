@@ -1,4 +1,4 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import {DownOutlined, InfoCircleOutlined, PlusOutlined} from '@ant-design/icons';
 import react from 'react'
 import {
   Alert,
@@ -18,7 +18,7 @@ import {
   Switch, 
   Icon,
   Checkbox,
-  ConfigProvider
+  Radio
 } from 'antd';
 import zhCN from 'antd/es/date-picker/locale/zh_CN';
 import React, { useState, useRef } from 'react';
@@ -47,6 +47,7 @@ const user = [
     jfzlnq:1,
     '1hlnqpdx':1,
     'jfzpdx':1,
+    status:1,
     operator:'杨韬',
     isEdit:0
   },
@@ -66,6 +67,7 @@ const user = [
     jfzlnq:1,
     '1hlnqpdx':1,
     'jfzpdx':1,
+    status:1,
     operator:'杨韬',
     isEdit:0
   }
@@ -122,6 +124,14 @@ class TableList extends react.Component{
       data:user,
       editingKey: '',
       columns:[
+        {
+          title:'',
+          dataIndex:'status',
+          width:20,
+          render:(text,record)=>{
+            return (record.status===0&&<InfoCircleOutlined style={{color:'red'}}/>)
+          }
+        },
         {
           title: '日期',
           dataIndex: 'date',
@@ -352,6 +362,7 @@ class TableList extends react.Component{
             jfzlnq:0,
             '1hlnqpdx':0,
             'jfzpdx':0,
+            status:0,
             operator:'杨韬',
             isEdit:1
           },
@@ -370,9 +381,15 @@ class TableList extends react.Component{
       }
       const newData = [...this.state.data];
       const index = newData.findIndex(item => key === item.key);
+      for(let key in row){
+        if(row[key] === false){
+          row.status=0;
+          break;
+        }
+      }
       row.isEdit = 0;
       row['date'] = moment().format('YYYY-MM-DD');
-      row['time'] = moment().format('HH:mm:ss')
+      row['time'] = moment().format('HH:mm:ss');
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, {
@@ -431,19 +448,27 @@ class TableList extends react.Component{
               <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
                 <Form.Item
                   label="日期"
-                  name="desc"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入至少五个字符的规则描述！',
-                      min: 5,
-                    },
-                  ]}
+                  name="date"
                 >
                   {getFieldDecorator('date', {
                     initialValue: moment()
                   })( <DatePicker locale={zhCN} placeholder="请输入" />)}
 
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
+                <Form.Item
+                  label="状态"
+                  name="status"
+                >
+                  {getFieldDecorator('status', {
+
+                  })(
+                    <Radio.Group>
+                      <Radio.Button value="1">正常</Radio.Button>
+                      <Radio.Button value="0">异常</Radio.Button>
+                    </Radio.Group>
+                  )}
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12} md={12} lg={8} xl={8} xxl={6} style={{paddingLeft:8,paddingRight:8}}>
@@ -454,8 +479,10 @@ class TableList extends react.Component{
           </Form>
         </div>
         <div>
-          <Button type={'primary'} style={{float:'right',marginBottom:8}}>导出</Button>
-          {/*<Alert message={'2020年 02月'} style={{marginBottom:5}}/>*/}
+          <div>
+            <span>机房：  </span><span>部门：  </span>
+            <Button type={'primary'} style={{float:'right',marginBottom:8}}>导出</Button>
+          </div>
           <EditableContext.Provider value={this.props.form}>
             <Table
               components={components}

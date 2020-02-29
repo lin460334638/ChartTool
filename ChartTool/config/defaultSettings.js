@@ -11,7 +11,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: '蓝天填报系统V1.0',
+  title: '六五四台巡机抄表',
   pwa: false,
   iconfontUrl: '',
 };
